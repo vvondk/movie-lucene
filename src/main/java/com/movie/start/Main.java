@@ -2,6 +2,8 @@ package com.movie.start;
 
 import com.movie.domain.Movie;
 import com.movie.index.Indexer;
+import com.movie.search.Searcher;
+import com.movie.util.LuceneConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,20 +16,20 @@ public class Main {
     public static void main(String[] args) throws Exception {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 
-        Indexer indexer = new Indexer();
+        LuceneConfig luceneConfig = new LuceneConfig();
+        logger.info("start indexing...");
+        Indexer indexer = new Indexer(luceneConfig.getDirectory(), luceneConfig.getAnalyzer(), luceneConfig.getIndexWriterConfig());
         List<Movie> movieList = indexer.parse();
+        indexer.makeIndex(movieList);
 
-        int index = 0;
-        for(Movie movie : movieList){
-            System.out.println(movie.toString());
-            index++;
-            if(index == 20)
-                break;
+        Searcher searcher = new Searcher(luceneConfig.getIndexSearcher(), luceneConfig.getHitsPerPage());
+
+        logger.info("start search...");
+        String cmd = "";
+        while(!(cmd = bufferedReader.readLine()).equals("0")){
+            searcher.search(cmd);
+            logger.info("=============================");
+
         }
-
-//        String cmd = "";
-//        while(!(cmd = bufferedReader.readLine()).equals("0")){
-//            System.out.println(cmd);
-//        }
     }
 }
