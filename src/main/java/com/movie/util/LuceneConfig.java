@@ -9,6 +9,8 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -16,6 +18,7 @@ import java.nio.file.Paths;
 @Getter
 public class LuceneConfig {
 
+    private static Logger logger = LoggerFactory.getLogger(LuceneConfig.class);
     private Directory directory;
     private IndexWriterConfig indexWriterConfig;
     private Analyzer analyzer;
@@ -39,7 +42,7 @@ public class LuceneConfig {
 
             hitsPerPage = 10;
         }catch (IOException e){
-            e.printStackTrace();
+            logger.error("config error {}", e);
         }
     }
 }

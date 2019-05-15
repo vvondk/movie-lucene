@@ -22,17 +22,12 @@ public class Indexer {
     private Directory directory;
     private IndexWriterConfig indexWriterConfig;
 
-    private Analyzer analyzer;
-
-    public Indexer(Directory directory, Analyzer analyzer, IndexWriterConfig indexWriterConfig) {
+    public Indexer(Directory directory, IndexWriterConfig indexWriterConfig) {
         this.directory = directory;
-        this.analyzer = analyzer;
         this.indexWriterConfig = indexWriterConfig;
     }
 
-    public List<Movie> parse() throws IOException {
-        String fileName = "/Users/won/workspace/study-serving/movie.csv";
-
+    public List<Movie> parse(String fileName) throws IOException {
         List<Movie> movieList = null;
 
         try(Reader reader = Files.newBufferedReader(Paths.get(fileName))) {
@@ -55,6 +50,7 @@ public class Indexer {
                 document.add(new IntPoint("key", movie.getKey()));
                 document.add(new TextField("name", movie.getName(), Field.Store.YES));
                 document.add(new TextField("engName", movie.getEngName(), Field.Store.YES));
+
                 if(movie.getProductionYear() != null)
                     document.add(new StringField("productionYear", DateTools.dateToString(movie.getProductionYear(),DateTools.Resolution.YEAR), Field.Store.YES));
 
@@ -81,7 +77,6 @@ public class Indexer {
 
                 try {
                     indexWriter.addDocument(document);
-                    //indexWriter.commit();
                 } catch (IOException e) {
                     logger.error("document add error {}", e);
                 }

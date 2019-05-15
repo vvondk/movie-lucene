@@ -21,8 +21,14 @@ public class Searcher {
     }
 
     public void search(String searchQuery) throws IOException {
-        Query query = new TermQuery(new Term("name", searchQuery));
+        Query krQuery = new TermQuery(new Term("name", searchQuery));
+        Query engQuery = new TermQuery(new Term("engName", searchQuery));
 
+        BooleanQuery.Builder builder = new BooleanQuery.Builder();
+        builder.add(krQuery, BooleanClause.Occur.SHOULD);
+        builder.add(engQuery, BooleanClause.Occur.SHOULD);
+
+        Query query = builder.build();
         TopDocs docs = indexSearcher.search(query, hitsPerPage);
         ScoreDoc[] hits = docs.scoreDocs;
 
@@ -34,10 +40,11 @@ public class Searcher {
         Arrays.stream(hits).forEach(hit -> {
              try {
                  int docId = hit.doc;
-                 logger.info("docID : " + docId);
                  Document document = indexSearcher.doc(docId);
-                 logger.info(document.get("name"));
-                 logger.info(document.get("engName"));
+
+                 logger.info("docID : " + docId);
+                 logger.info("name : " + document.get("name"));
+                 logger.info("eng : " + document.get("engName"));
                  logger.info("-------------------------------");
              }catch (IOException e) {
                  e.printStackTrace();

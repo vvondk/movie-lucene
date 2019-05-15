@@ -13,23 +13,32 @@ import java.util.List;
 
 public class Main {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
+
+    private static final String END_COMMAND = "0";
+
     public static void main(String[] args) throws Exception {
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
 
+        logger.info("start...");
         LuceneConfig luceneConfig = new LuceneConfig();
-        logger.info("start indexing...");
-        Indexer indexer = new Indexer(luceneConfig.getDirectory(), luceneConfig.getAnalyzer(), luceneConfig.getIndexWriterConfig());
-        List<Movie> movieList = indexer.parse();
-        indexer.makeIndex(movieList);
-
+        Indexer indexer = new Indexer(luceneConfig.getDirectory(), luceneConfig.getIndexWriterConfig());
         Searcher searcher = new Searcher(luceneConfig.getIndexSearcher(), luceneConfig.getHitsPerPage());
+        logger.info("complete configuration");
 
-        logger.info("start search...");
+        logger.info("indexing...");
+        long indexStartTime = System.currentTimeMillis();
+        String fileName = "/Users/won/workspace/study-serving/movie.csv";
+
+        List<Movie> movieList = indexer.parse(fileName);
+        indexer.makeIndex(movieList);
+        long indexEndTime = System.currentTimeMillis();
+        logger.info("complete indexing  > "+ (indexEndTime - indexStartTime) + " ms");
+
+        logger.info("searching...");
         String cmd = "";
-        while(!(cmd = bufferedReader.readLine()).equals("0")){
+        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        while(!END_COMMAND.equals(cmd = bufferedReader.readLine())){
+            logger.info("==================================");
             searcher.search(cmd);
-            logger.info("=============================");
-
         }
     }
 }

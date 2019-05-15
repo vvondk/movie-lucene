@@ -10,7 +10,8 @@ public class NGramAnalyzer extends Analyzer {
 
     @Override
     protected TokenStreamComponents createComponents(String fieldName) {
-        Tokenizer tokenizer = new NGramTokenizer(2, 2);
+        // TODO - ?
+        Tokenizer tokenizer = new NGramTokenizer(2, 3);
         NGramTokenFilter nGramTokenFilter = new NGramTokenFilter(tokenizer);
         return new TokenStreamComponents(tokenizer, nGramTokenFilter);
     }
