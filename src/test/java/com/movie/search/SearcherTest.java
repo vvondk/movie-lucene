@@ -1,6 +1,6 @@
 package com.movie.search;
 
-import com.movie.util.LuceneConfig;
+import com.movie.config.LuceneConfig;
 import org.junit.Test;
 
 import java.io.IOException;

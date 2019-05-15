@@ -3,7 +3,7 @@ package com.movie.start;
 import com.movie.domain.Movie;
 import com.movie.index.Indexer;
 import com.movie.search.Searcher;
-import com.movie.util.LuceneConfig;
+import com.movie.config.LuceneConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

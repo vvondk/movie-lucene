@@ -1,6 +1,7 @@
-package com.movie.util;
+package com.movie.config;
 
 import com.movie.analyzer.NGramAnalyzer;
+import com.movie.util.PropertiesReader;
 import lombok.Getter;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.DirectoryReader;
