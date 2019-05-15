@@ -3,7 +3,6 @@ package com.movie.index;
 import com.movie.domain.Movie;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
-import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -16,6 +15,7 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.function.Function;
 
 public class Indexer {
     private static Logger logger = LoggerFactory.getLogger(Indexer.class);
@@ -27,27 +27,27 @@ public class Indexer {
         this.indexWriterConfig = indexWriterConfig;
     }
 
-    public List<Movie> parse(String fileName) throws IOException {
-        List<Movie> movieList = null;
+    public List parse(String fileName, Class clazz) throws IOException {
+        List list = null;
 
         try(Reader reader = Files.newBufferedReader(Paths.get(fileName))) {
             CsvToBean csvToBean = new CsvToBeanBuilder(reader)
-                    .withType(Movie.class)
+                    .withType(clazz)
                     .withIgnoreLeadingWhiteSpace(true)
                     .build();
 
-            movieList = csvToBean.parse();
+            list = csvToBean.parse();
         }
 
-        return movieList;
+        return list;
     }
 
+    // TODO - delete
     public boolean makeIndex(List<Movie> movieList) {
         try(IndexWriter indexWriter = new IndexWriter(directory, indexWriterConfig)) {
             movieList.stream().forEach(movie -> {
                 Document document = new Document();
 
-                // TODO - ? (option file??)
                 document.add(new IntPoint("key", movie.getKey()));
                 document.add(new TextField("name", movie.getName(), Field.Store.YES));
                 document.add(new TextField("engName", movie.getEngName(), Field.Store.YES));
@@ -89,4 +89,28 @@ public class Indexer {
         }
         return true;
     }
+
+
+    public boolean makeIndex(List list, Function<Object, Document> function, Class clazz) {
+        try(IndexWriter indexWriter = new IndexWriter(directory, indexWriterConfig)) {
+            list.stream().forEach(item -> {
+
+                Document document = function.apply((Movie)item);
+
+                try {
+                    indexWriter.addDocument(document);
+                } catch (IOException e) {
+                    logger.error("document add error {}", e);
+                }
+
+            });
+        } catch (IOException e) {
+            logger.error("indexWriter error {}", e);
+            e.printStackTrace();
+            return false;
+        }
+        return true;
+    }
+
+
 }

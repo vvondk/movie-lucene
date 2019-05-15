@@ -1,15 +1,17 @@
 package com.movie.start;
 
+import com.movie.config.LuceneConfig;
 import com.movie.domain.Movie;
+import com.movie.domain.MovieIndexFunction;
 import com.movie.index.Indexer;
 import com.movie.search.Searcher;
-import com.movie.config.LuceneConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.function.Function;
 
 public class Main {
     private static Logger logger = LoggerFactory.getLogger(Main.class);
@@ -28,8 +30,13 @@ public class Main {
         long indexStartTime = System.currentTimeMillis();
         String fileName = "/Users/won/workspace/study-serving/movie.csv";
 
-        List<Movie> movieList = indexer.parse(fileName);
-        indexer.makeIndex(movieList);
+        List list = indexer.parse(fileName, Movie.class);
+        //indexer.makeIndex(list);
+
+        Function movieIndexFunction = new MovieIndexFunction();
+
+        indexer.makeIndex(list, movieIndexFunction, Movie.class);
+
         long indexEndTime = System.currentTimeMillis();
         logger.info("complete indexing  > "+ (indexEndTime - indexStartTime) + " ms");
 
