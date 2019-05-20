@@ -4,7 +4,7 @@ import java.io.*;
 import java.util.Properties;
 
 public class PropertiesReader {
-    private static PropertiesReader instance = new PropertiesReader();
+
     private static Properties properties;
     private static String path = "/Users/won/workspace/study-serving/movie-lucene/src/main/resources/application.properties";
 

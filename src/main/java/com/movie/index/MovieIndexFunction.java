@@ -1,5 +1,6 @@
-package com.movie.domain;
+package com.movie.index;
 
+import com.movie.domain.Movie;
 import org.apache.lucene.document.*;
 
 import java.util.function.Function;

@@ -47,7 +47,7 @@ public class Searcher {
                  logger.info("eng : " + document.get("engName"));
                  logger.info("-------------------------------");
              }catch (IOException e) {
-                 e.printStackTrace();
+                 logger.error("print error {}", e);
              }
         });
     }
