@@ -1,13 +1,13 @@
 package com.movie.search;
 
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Searcher {
     private static Logger logger = LoggerFactory.getLogger(Searcher.class);
@@ -20,7 +20,7 @@ public class Searcher {
         this.hitsPerPage = hitsPerPage;
     }
 
-    public void search(String searchQuery) throws IOException {
+    public Map<String, Object> search(String searchQuery) throws IOException {
         Query krQuery = new TermQuery(new Term("name", searchQuery));
         Query engQuery = new TermQuery(new Term("engName", searchQuery));
 
@@ -32,23 +32,11 @@ public class Searcher {
         TopDocs docs = indexSearcher.search(query, hitsPerPage);
         ScoreDoc[] hits = docs.scoreDocs;
 
-        logger.info("검색 결과 : "+ hits.length +" / "+ docs.totalHits);
-        print(hits);
+        HashMap result = new HashMap();
+        result.put("indexSearcher", indexSearcher);
+        result.put("totalHits", docs.totalHits);
+        result.put("hits", hits);
+        return result;
     }
 
-    public void print(ScoreDoc[] hits){
-        Arrays.stream(hits).forEach(hit -> {
-             try {
-                 int docId = hit.doc;
-                 Document document = indexSearcher.doc(docId);
-
-                 logger.info("docID : " + docId);
-                 logger.info("name : " + document.get("name"));
-                 logger.info("eng : " + document.get("engName"));
-                 logger.info("-------------------------------");
-             }catch (IOException e) {
-                 e.printStackTrace();
-             }
-        });
-    }
 }
