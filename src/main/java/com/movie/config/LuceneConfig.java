@@ -7,6 +7,8 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
@@ -27,6 +29,8 @@ public class LuceneConfig {
     private IndexReader indexReader;
     private IndexSearcher indexSearcher;
 
+    private QueryParser queryParser;
+
     private int hitsPerPage;
 
     public LuceneConfig() {
@@ -40,6 +44,9 @@ public class LuceneConfig {
 
             indexReader = DirectoryReader.open(directory);
             indexSearcher = new IndexSearcher(indexReader);
+
+            String[] searchField = new String[]{"name", "engName"};
+            queryParser = new MultiFieldQueryParser(searchField, analyzer);
 
             hitsPerPage = 10;
         }catch (IOException e){
