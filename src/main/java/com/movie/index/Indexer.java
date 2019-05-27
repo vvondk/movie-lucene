@@ -3,6 +3,7 @@ package com.movie.index;
 import com.movie.domain.Movie;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -27,7 +28,22 @@ public class Indexer {
         this.indexWriterConfig = indexWriterConfig;
     }
 
-    public List parse(String fileName, Class clazz) throws IOException {
+    public boolean run(String fileName, Function<Object, Document> function, Class clazz) throws IOException {
+        boolean result = false;
+
+        logger.info("start indexing...");
+        long indexStartTime = System.currentTimeMillis();
+
+        List list = parse(fileName, clazz);
+        result = makeIndex(list, function, clazz);
+
+        long indexEndTime = System.currentTimeMillis();
+        logger.info("completed indexing  > "+ (indexEndTime - indexStartTime) + " ms");
+
+        return result;
+    }
+
+    private List parse(String fileName, Class clazz) throws IOException {
         List list = null;
 
         try(Reader reader = Files.newBufferedReader(Paths.get(fileName))) {
@@ -42,19 +58,20 @@ public class Indexer {
         return list;
     }
 
-    public boolean makeIndex(List list, Function<Object, Document> function, Class clazz) {
+    private boolean makeIndex(List list, Function<Object, Document> function, Class clazz) {
         try(IndexWriter indexWriter = new IndexWriter(directory, indexWriterConfig)) {
             list.stream().forEach(item -> {
+
                 Document document = function.apply(item);
                 try {
                     indexWriter.addDocument(document);
                 } catch (IOException e) {
-                    logger.error("document add error {}", e);
+                    logger.error("document add error", e);
                 }
 
             });
         } catch (IOException e) {
-            logger.error("indexWriter error {}", e);
+            logger.error("indexWriter error", e);
             return false;
         }
         return true;

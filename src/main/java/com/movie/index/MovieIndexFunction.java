@@ -10,7 +10,6 @@ public class MovieIndexFunction implements Function<Movie, Document> {
     public Document apply(Movie movie) {
         Document document = new Document();
 
-        // TODO - ? (option file??)
         document.add(new IntPoint("key", movie.getKey()));
         document.add(new TextField("name", movie.getName(), Field.Store.YES));
         document.add(new TextField("engName", movie.getEngName(), Field.Store.YES));
