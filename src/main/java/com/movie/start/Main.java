@@ -2,13 +2,9 @@ package com.movie.start;
 
 import com.movie.config.LuceneConfig;
 import com.movie.domain.Movie;
-<<<<<<< HEAD
-import com.movie.index.MovieIndexFunction;
-=======
-import com.movie.domain.MovieIndexFunction;
 import com.movie.domain.SearchResult;
->>>>>>> dev
 import com.movie.index.Indexer;
+import com.movie.index.MovieIndexFunction;
 import com.movie.search.Searcher;
 import com.movie.util.PropertiesReader;
 import com.movie.view.Printer;
@@ -17,7 +13,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Map;
 import java.util.function.Function;
 
 public class Main {
