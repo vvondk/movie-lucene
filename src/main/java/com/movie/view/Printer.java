@@ -12,7 +12,7 @@ public class Printer {
     public void print(SearchResult searchResult){
 
         long hitsLength = searchResult.getHitsLength();
-        long totalHits = searchResult.getTotalHits();
+        long totalHits = searchResult.getTotalHits().value;
 
         logger.info("검색 결과 : "+ hitsLength +" / "+ totalHits);
 

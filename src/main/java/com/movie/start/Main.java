@@ -27,26 +27,28 @@ public class Main {
     static {
         luceneConfig = new LuceneConfig();
         indexer = new Indexer(luceneConfig.getDirectory(), luceneConfig.getIndexWriterConfig());
-        searcher = new Searcher(luceneConfig.getIndexSearcher(), luceneConfig.getHitsPerPage(), luceneConfig.getQueryParser());
+        searcher = new Searcher(luceneConfig.getIndexSearcher(), luceneConfig.getHitsPerPage(), luceneConfig.getQueryParser(), luceneConfig.getAnalyzer());
     }
 
     public static void main(String[] args) throws Exception {
-
-        String fileName = PropertiesReader.get("movie.index.file");
-        Function movieIndexFunction = new MovieIndexFunction();
-        indexer.run(fileName, movieIndexFunction, Movie.class);
-
-        Printer printer = new Printer();
-
-        logger.info("start searching...");
         String cmd = "";
-        SearchResult searchResult = null;
+        logger.info("Do you want to index? (yes)");
 
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
+        cmd = bufferedReader.readLine();
+
+        if("yes".equals(cmd.toLowerCase())) {
+            String fileName = PropertiesReader.get("movie.index.file");
+            Function movieIndexFunction = new MovieIndexFunction();
+            indexer.run(fileName, movieIndexFunction, Movie.class);
+        }
+
+        Printer printer = new Printer();
+        logger.info("start searching...");
+        SearchResult searchResult = null;
+
         while(!END_COMMAND.equals(cmd = bufferedReader.readLine())){
-
             searchResult = searcher.search(cmd);
-
             printer.print(searchResult);
         }
     }

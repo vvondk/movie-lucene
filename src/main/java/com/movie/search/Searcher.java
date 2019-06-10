@@ -1,10 +1,15 @@
 package com.movie.search;
 
+import com.movie.domain.DocResult;
 import com.movie.domain.SearchResult;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
+import org.apache.lucene.search.highlight.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,10 +22,22 @@ public class Searcher {
     private int hitsPerPage;
     private QueryParser queryParser;
 
+    private Analyzer analyzer;
+
+
     public Searcher(IndexSearcher indexSearcher, int hitsPerPage, QueryParser queryParser) {
         this.indexSearcher = indexSearcher;
         this.hitsPerPage = hitsPerPage;
         this.queryParser = queryParser;
+
+    }
+
+    public Searcher(IndexSearcher indexSearcher, int hitsPerPage, QueryParser queryParser, Analyzer analyzer) {
+        this.indexSearcher = indexSearcher;
+        this.hitsPerPage = hitsPerPage;
+        this.queryParser = queryParser;
+        this.analyzer = analyzer;
+
     }
 
     public SearchResult search(String searchQuery) throws IOException, ParseException {
@@ -36,7 +53,7 @@ public class Searcher {
         TopDocs docs = indexSearcher.search(query, hitsPerPage);
         ScoreDoc[] hits = docs.scoreDocs;
 
-        SearchResult searchResult = new SearchResult(indexSearcher, docs.totalHits, hits);
+        SearchResult searchResult = new SearchResult(query, indexSearcher, docs.totalHits, hits, analyzer);
 
         return searchResult;
     }

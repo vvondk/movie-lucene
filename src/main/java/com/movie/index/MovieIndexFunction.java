@@ -2,6 +2,7 @@ package com.movie.index;
 
 import com.movie.domain.Movie;
 import org.apache.lucene.document.*;
+import org.apache.lucene.index.IndexOptions;
 
 import java.util.function.Function;
 
@@ -11,11 +12,22 @@ public class MovieIndexFunction implements Function<Movie, Document> {
         Document document = new Document();
 
         document.add(new IntPoint("key", movie.getKey()));
-        document.add(new TextField("name", movie.getName(), Field.Store.YES));
-        document.add(new TextField("engName", movie.getEngName(), Field.Store.YES));
 
-        if(movie.getProductionYear() != null)
-            document.add(new StringField("productionYear", DateTools.dateToString(movie.getProductionYear(),DateTools.Resolution.YEAR), Field.Store.YES));
+        FieldType fieldType = new FieldType();
+        fieldType.setStored(true);
+        fieldType.setIndexOptions(IndexOptions.DOCS_AND_FREQS_AND_POSITIONS_AND_OFFSETS);
+        fieldType.setTokenized(true);
+        fieldType.setStoreTermVectors(true);
+        fieldType.setStoreTermVectorPositions(true);
+        fieldType.setStoreTermVectorOffsets(true);
+        fieldType.setStoreTermVectorPayloads(true);
+
+        document.add(new Field("name", movie.getName(), fieldType));
+        document.add(new Field("engName", movie.getEngName(), fieldType));
+
+        if(movie.getProductionYear() != null) {
+            document.add(new StringField("productionYear", DateTools.dateToString(movie.getProductionYear(), DateTools.Resolution.YEAR), Field.Store.YES));
+        }
 
         for (Object country : movie.getProductionCountry()) {
             document.add(new StringField("productionCountry", (String)country, Field.Store.YES));

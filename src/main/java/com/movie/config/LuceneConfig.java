@@ -1,9 +1,11 @@
 package com.movie.config;
 
+import com.movie.analyzer.EdgeNGramAnalyzer;
 import com.movie.analyzer.NGramAnalyzer;
 import com.movie.util.PropertiesReader;
 import lombok.Getter;
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -33,6 +35,8 @@ public class LuceneConfig {
 
     private int hitsPerPage;
 
+    private String[] searchField = new String[]{"name", "engName"};
+
     public LuceneConfig() {
         try {
             String directoryPath = PropertiesReader.get("movie.index.directory.path");
@@ -45,12 +49,11 @@ public class LuceneConfig {
             indexReader = DirectoryReader.open(directory);
             indexSearcher = new IndexSearcher(indexReader);
 
-            String[] searchField = new String[]{"name", "engName"};
             queryParser = new MultiFieldQueryParser(searchField, analyzer);
 
             hitsPerPage = 10;
         }catch (IOException e){
-            logger.error("config error {}", e);
+            logger.error("config error", e);
         }
     }
 }
