@@ -13,8 +13,10 @@ repositories {
 
 dependencies {
     // lucene
-    compile group: 'org.apache.lucene', name: 'lucene-core', version: '7.7.1'
-    compile group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: '7.7.1'
+    compile group: 'org.apache.lucene', name: 'lucene-core', version: '8.1.1'
+    compile group: 'org.apache.lucene', name: 'lucene-analyzers-common', version: '8.1.1'
+    compile group: 'org.apache.lucene', name: 'lucene-queryparser', version: '8.1.1'
+    compile group: 'org.apache.lucene', name: 'lucene-highlighter', version: '8.1.1'
 
     // csv
     compile group: 'com.opencsv', name: 'opencsv', version: '4.6'
@@ -26,6 +28,7 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.25'
 
+    // test
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.11.1'
 
