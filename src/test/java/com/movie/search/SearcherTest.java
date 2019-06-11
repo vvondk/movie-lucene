@@ -1,6 +1,8 @@
 package com.movie.search;
 
 import com.movie.config.LuceneConfig;
+import com.movie.domain.SearchResult;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -12,7 +14,7 @@ public class SearcherTest {
     private Searcher searcher;
     public SearcherTest() {
         LuceneConfig luceneConfig = new LuceneConfig();
-        searcher = new Searcher(luceneConfig.getIndexSearcher(), luceneConfig.getHitsPerPage());
+        searcher = new Searcher(luceneConfig.getIndexSearcher(), luceneConfig.getHitsPerPage(), luceneConfig.getQueryParser());
     }
 
     @Test
@@ -20,7 +22,13 @@ public class SearcherTest {
         assertThat(searcher.getClass().getName()).isEqualTo("com.movie.search.Searcher");
     }
 
-    public void testSearch() throws IOException {
-        String searchValue = "토토";
+
+    @Test
+    public void searchKoreanQuery() throws IOException, ParseException {
+        String searchQuery = "토토";
+        SearchResult searchResult = searcher.search(searchQuery);
+        assertThat(searchResult).isNotNull();
+        assertThat(searchResult.getDocResults()).hasSize(10);
+        assertThat(searchResult.getTotalHits()).isEqualTo(887L);
     }
 }

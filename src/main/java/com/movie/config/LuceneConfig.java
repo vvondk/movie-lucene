@@ -42,6 +42,7 @@ public class LuceneConfig {
             String directoryPath = PropertiesReader.get("movie.index.directory.path");
 
             directory = FSDirectory.open(Paths.get(directoryPath));
+
             analyzer = new NGramAnalyzer();
             indexWriterConfig = new IndexWriterConfig(analyzer);
             indexWriterConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
