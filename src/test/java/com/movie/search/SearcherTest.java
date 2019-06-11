@@ -29,6 +29,6 @@ public class SearcherTest {
         SearchResult searchResult = searcher.search(searchQuery);
         assertThat(searchResult).isNotNull();
         assertThat(searchResult.getDocResults()).hasSize(10);
-        assertThat(searchResult.getTotalHits()).isEqualTo(887L);
+        assertThat(searchResult.getTotalHits().value).isEqualTo(887L);
     }
 }
