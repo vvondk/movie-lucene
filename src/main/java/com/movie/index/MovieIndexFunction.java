@@ -4,6 +4,7 @@ import com.movie.domain.Movie;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexOptions;
 
+import java.util.Arrays;
 import java.util.function.Function;
 
 public class MovieIndexFunction implements Function<Movie, Document> {
@@ -29,25 +30,22 @@ public class MovieIndexFunction implements Function<Movie, Document> {
             document.add(new StringField("productionYear", DateTools.dateToString(movie.getProductionYear(), DateTools.Resolution.YEAR), Field.Store.YES));
         }
 
-        for (Object country : movie.getProductionCountry()) {
-            document.add(new StringField("productionCountry", (String)country, Field.Store.YES));
-        }
+        movie.getProductionCountry()
+                .forEach(country-> document.add(new StringField("productionCountry", (String)country, Field.Store.YES)));
 
         document.add(new StringField("type", movie.getType(), Field.Store.YES));
 
-        for (Object genre : movie.getGenre()) {
-            document.add(new StringField("genre", (String)genre, Field.Store.YES));
-        }
+        movie.getGenre()
+                .forEach(genre-> document.add(new StringField("genre", (String)genre, Field.Store.YES)));
 
         document.add(new StringField("productionStatus", movie.getProductionStatus(), Field.Store.YES));
 
-        for (Object director : movie.getDirector()) {
-            document.add(new StringField("director", (String)director, Field.Store.YES));
-        }
+        movie.getDirector()
+                .forEach(director->document.add(new StringField("director", (String)director, Field.Store.YES)));
 
-        for (Object producer : movie.getProducer()) {
-            document.add(new StringField("producer", (String)producer, Field.Store.YES));
-        }
+        movie.getProducer()
+                .forEach(producer->document.add(new StringField("producer", (String)producer, Field.Store.YES)));
+
         return document;
     }
 }

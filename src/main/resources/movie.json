@@ -1,0 +1,12 @@
+{
+  "index-field" : ["name", "engName"],
+  "fields" : [
+    {
+      "name" : "name"
+
+    },
+    {
+      "name" : "engName"
+    }
+  ]
+}
