@@ -31,4 +31,12 @@ public class SearcherTest {
         assertThat(searchResult.getDocResults()).hasSize(10);
         assertThat(searchResult.getTotalHits().value).isEqualTo(887L);
     }
+
+    @Test
+    public void testHighlight() throws IOException, ParseException {
+        String searchQuery = "토토";
+        SearchResult searchResult = searcher.search(searchQuery);
+        assertThat(searchResult).isNotNull();
+        assertThat(searchResult.getDocResults().get(0).getHighlightTitle()).isEqualTo("이웃집 <B>토토</B>로");
+    }
 }
