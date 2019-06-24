@@ -1,19 +1,17 @@
 package com.movie.domain;
 
-import com.movie.analyzer.AnalyzerService;
 import lombok.Getter;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TotalHits;
 import org.apache.lucene.search.highlight.*;
-import org.apache.lucene.search.highlight.Formatter;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Getter
 public class SearchResult {
@@ -27,19 +25,24 @@ public class SearchResult {
     private QueryScorer queryScorer;
 
 
-    public SearchResult(Query query, IndexSearcher indexSearcher, TotalHits totalHits, ScoreDoc[] hits, Analyzer analyzer) {
+    public SearchResult(SearchRequest searchRequest) {
 
-        queryScorer = new QueryScorer(query);
+        queryScorer = new QueryScorer(searchRequest.getQuery());
         highlighter = new Highlighter(formatter, queryScorer);
         fragmenter = new SimpleSpanFragmenter(queryScorer, 10);
         highlighter.setTextFragmenter(fragmenter);
 
-        this.totalHits = totalHits;
-        this.hitsLength = hits.length;
+        Analyzer analyzer = searchRequest.getAnalyzer();
+        IndexSearcher indexSearcher = searchRequest.getIndexSearcher();
+
+        this.hitsLength = searchRequest.getHits().length;
         this.docResults = new ArrayList<>();
 
-        AnalyzerService analyzerService = new AnalyzerService();
-        Arrays.stream(hits).forEach(hit -> {
+        this.totalHits = searchRequest.getTotalHits();
+
+        //AnalyzerService analyzerService = new AnalyzerService();
+
+        Arrays.stream(searchRequest.getHits()).forEach(hit -> {
             try {
                 int docId = hit.doc;
                 Document document = indexSearcher.doc(docId);
@@ -49,19 +52,8 @@ public class SearchResult {
                 tokenStream = analyzer.tokenStream("engName", document.get("engName"));
                 String highlightedEngName = highlighter.getBestFragment(tokenStream, document.get("engName"));
 
-
-                if(highlightedName != null)
-                    System.out.println(highlightedName);
-                else
-                    System.out.println(document.get("name"));
-
-                if(highlightedEngName != null)
-                    System.out.println(highlightedEngName);
-                else
-                    System.out.println(document.get("engName"));
-
-                DocResult docResult = new DocResult(docId, document.get("name"), document.get("engName"));
-                analyzerService.analyzeText(docResult, analyzer);
+                DocResult docResult = new DocResult(docId, document.get("name"), document.get("engName"), highlightedName, highlightedEngName);
+                //analyzerService.analyzeText(docResult, analyzer);
 
                 docResults.add(docResult);
             } catch (IOException | InvalidTokenOffsetsException e) {

@@ -3,6 +3,7 @@ package com.movie.index;
 import com.movie.domain.Movie;
 import org.apache.lucene.document.*;
 import org.apache.lucene.index.IndexOptions;
+import org.apache.lucene.index.IndexableField;
 
 import java.util.Arrays;
 import java.util.function.Function;
@@ -21,7 +22,6 @@ public class MovieIndexFunction implements Function<Movie, Document> {
         fieldType.setStoreTermVectors(true);
         fieldType.setStoreTermVectorPositions(true);
         fieldType.setStoreTermVectorOffsets(true);
-        fieldType.setStoreTermVectorPayloads(true);
 
         document.add(new Field("name", movie.getName(), fieldType));
         document.add(new Field("engName", movie.getEngName(), fieldType));
@@ -30,21 +30,17 @@ public class MovieIndexFunction implements Function<Movie, Document> {
             document.add(new StringField("productionYear", DateTools.dateToString(movie.getProductionYear(), DateTools.Resolution.YEAR), Field.Store.YES));
         }
 
-        movie.getProductionCountry()
-                .forEach(country-> document.add(new StringField("productionCountry", (String)country, Field.Store.YES)));
+        movie.getProductionCountry().forEach(country-> document.add(new StringField("productionCountry", (String)country, Field.Store.YES)));
 
         document.add(new StringField("type", movie.getType(), Field.Store.YES));
 
-        movie.getGenre()
-                .forEach(genre-> document.add(new StringField("genre", (String)genre, Field.Store.YES)));
+        movie.getGenre().forEach(genre-> document.add(new StringField("genre", (String)genre, Field.Store.YES)));
 
         document.add(new StringField("productionStatus", movie.getProductionStatus(), Field.Store.YES));
 
-        movie.getDirector()
-                .forEach(director->document.add(new StringField("director", (String)director, Field.Store.YES)));
+        movie.getDirector().forEach(director->document.add(new StringField("director", (String)director, Field.Store.YES)));
 
-        movie.getProducer()
-                .forEach(producer->document.add(new StringField("producer", (String)producer, Field.Store.YES)));
+        movie.getProducer().forEach(producer->document.add(new StringField("producer", (String)producer, Field.Store.YES)));
 
         return document;
     }

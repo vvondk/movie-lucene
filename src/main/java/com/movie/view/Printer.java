@@ -12,17 +12,10 @@ public class Printer {
     public void print(SearchResult searchResult){
 
         long hitsLength = searchResult.getHitsLength();
-        long totalHits = searchResult.getTotalHits().value;
 
-        logger.info("검색 결과 : "+ hitsLength +" / "+ totalHits);
+        logger.info("검색 결과 : "+ hitsLength +" / " + searchResult.getTotalHits().value);
 
-        StringBuffer sb = new StringBuffer();
         List docs = searchResult.getDocResults();
-        docs.stream().forEach(doc -> {
-            sb.append(doc+"\n");
-
-        });
-
-        logger.info("\n"+sb.toString());
+        docs.stream().forEach(System.out::println);
     }
 }

@@ -1,6 +1,7 @@
 package com.movie.search;
 
 import com.movie.domain.DocResult;
+import com.movie.domain.SearchRequest;
 import com.movie.domain.SearchResult;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -21,9 +22,7 @@ public class Searcher {
     private IndexSearcher indexSearcher;
     private int hitsPerPage;
     private QueryParser queryParser;
-
     private Analyzer analyzer;
-
 
     public Searcher(IndexSearcher indexSearcher, int hitsPerPage, QueryParser queryParser) {
         this.indexSearcher = indexSearcher;
@@ -33,9 +32,7 @@ public class Searcher {
     }
 
     public Searcher(IndexSearcher indexSearcher, int hitsPerPage, QueryParser queryParser, Analyzer analyzer) {
-        this.indexSearcher = indexSearcher;
-        this.hitsPerPage = hitsPerPage;
-        this.queryParser = queryParser;
+        this(indexSearcher, hitsPerPage, queryParser);
         this.analyzer = analyzer;
 
     }
@@ -53,7 +50,8 @@ public class Searcher {
         TopDocs docs = indexSearcher.search(query, hitsPerPage);
         ScoreDoc[] hits = docs.scoreDocs;
 
-        SearchResult searchResult = new SearchResult(query, indexSearcher, docs.totalHits, hits, analyzer);
+        SearchRequest searchRequest = new SearchRequest(query, indexSearcher, docs.totalHits, hits, analyzer);
+        SearchResult searchResult = new SearchResult(searchRequest);
 
         return searchResult;
     }

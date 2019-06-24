@@ -35,7 +35,7 @@ public class Indexer {
         long indexStartTime = System.currentTimeMillis();
 
         List list = parse(fileName, clazz);
-        result = makeIndex(list, function, clazz);
+        result = make(list, function, clazz);
 
         long indexEndTime = System.currentTimeMillis();
         logger.info("completed indexing  > "+ (indexEndTime - indexStartTime) + " ms");
@@ -58,7 +58,7 @@ public class Indexer {
         return list;
     }
 
-    private boolean makeIndex(List list, Function<Object, Document> function, Class clazz) {
+    private boolean make(List list, Function<Object, Document> function, Class clazz) {
         try(IndexWriter indexWriter = new IndexWriter(directory, indexWriterConfig)) {
             list.stream().forEach(item -> {
 
