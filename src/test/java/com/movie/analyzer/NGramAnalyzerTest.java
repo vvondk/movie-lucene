@@ -33,6 +33,15 @@ public class NGramAnalyzerTest {
         assertThat(list).isNotEmpty();
     }
 
+    @Test
+    public void testTokenFilter3(){
+        String text = "매니페스토";
+        List<String> list = analyzeText(text, analyzer);
+        assertThat(list).isNotEmpty();
+
+        analyzeText("테스트 진행중", analyzer);
+    }
+
     public List<String> analyzeText(String text, Analyzer analyzer) {
         List list = new ArrayList();
         TokenStream tokenStream = analyzer.tokenStream("text", text);

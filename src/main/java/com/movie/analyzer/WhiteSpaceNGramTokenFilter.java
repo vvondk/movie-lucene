@@ -8,7 +8,7 @@ import org.apache.lucene.analysis.tokenattributes.PositionIncrementAttribute;
 
 import java.io.IOException;
 
-public class CustomNGramTokenFilter extends TokenFilter {
+public class WhiteSpaceNGramTokenFilter extends TokenFilter {
     public static final boolean DEFAULT_PRESERVE_ORIGINAL = false;
 
     private final int minGram;
@@ -26,7 +26,9 @@ public class CustomNGramTokenFilter extends TokenFilter {
     private final CharTermAttribute termAtt = addAttribute(CharTermAttribute.class);
     private final PositionIncrementAttribute posIncrAtt = addAttribute(PositionIncrementAttribute.class);
 
+    // add
     private final OffsetAttribute offsetAtt = addAttribute(OffsetAttribute.class);
+    private int preTokenEndOffset;
 
     /**
      * Creates an NGramTokenFilter that, for a given input term, produces all
@@ -44,7 +46,7 @@ public class CustomNGramTokenFilter extends TokenFilter {
      * @param preserveOriginal Whether or not to keep the original term when it
      * is shorter than minGram or longer than maxGram
      */
-    public CustomNGramTokenFilter(TokenStream input, int minGram, int maxGram, boolean preserveOriginal) {
+    public WhiteSpaceNGramTokenFilter(TokenStream input, int minGram, int maxGram, boolean preserveOriginal) {
         super(input);
         if (minGram < 1) {
             throw new IllegalArgumentException("minGram must be greater than zero");
@@ -63,25 +65,29 @@ public class CustomNGramTokenFilter extends TokenFilter {
      * @param input {@link TokenStream} holding the input to be tokenized
      * @param gramSize the size of n-grams to generate.
      */
-    public CustomNGramTokenFilter(TokenStream input, int gramSize) {
+    public WhiteSpaceNGramTokenFilter(TokenStream input, int gramSize) {
         this(input, gramSize, gramSize, DEFAULT_PRESERVE_ORIGINAL);
     }
 
     @Override
     public final boolean incrementToken() throws IOException {
+
         while (true) {
             if (curTermBuffer == null) {
                 if (!input.incrementToken()) {
+                    // add
+                    // 하나의 필드값 색인 생성 후 초기화 해주는 작업 필요, 안그러면 이어져서 실행됨
+                    preTokenEndOffset = 0;
+
                     return false;
                 }
                 state = captureState();
 
-                System.out.println(termAtt.toString());
                 curTermLength = termAtt.length();
                 curTermCodePointCount = Character.codePointCount(termAtt, 0, termAtt.length());
+
                 curPosIncr += posIncrAtt.getPositionIncrement();
                 curPos = 0;
-
 
                 if (preserveOriginal && curTermCodePointCount < minGram) {
                     // Token is shorter than minGram, but we'd still like to keep it.
@@ -99,16 +105,16 @@ public class CustomNGramTokenFilter extends TokenFilter {
                 curGramSize = minGram;
             }
             if ((curPos + curGramSize) <= curTermCodePointCount) {
+
                 restoreState(state);
                 final int start = Character.offsetByCodePoints(curTermBuffer, 0, curTermLength, 0, curPos);
                 final int end = Character.offsetByCodePoints(curTermBuffer, 0, curTermLength, start, curGramSize);
                 termAtt.copyBuffer(curTermBuffer, start, end - start);
 
-
                 posIncrAtt.setPositionIncrement(curPosIncr);
 
-                // ***
-                offsetAtt.setOffset(start, end);
+                // add
+                offsetAtt.setOffset(preTokenEndOffset+start, preTokenEndOffset+end);
 
                 curPosIncr = 0;
                 curGramSize++;
@@ -120,7 +126,8 @@ public class CustomNGramTokenFilter extends TokenFilter {
                 posIncrAtt.setPositionIncrement(0);
                 termAtt.copyBuffer(curTermBuffer, 0, curTermLength);
 
-                //offsetAtt.setOffset(, curTermLength);
+                // add
+                offsetAtt.setOffset(0, curTermLength);
 
                 curTermBuffer = null;
                 return true;
@@ -128,6 +135,11 @@ public class CustomNGramTokenFilter extends TokenFilter {
 
             // Done with this input token, get next token on next iteration.
             curTermBuffer = null;
+
+            // TODO : totalPosIncr(=)+1... stop filter처럼 토큰 처리되었을 경우...?
+            // add
+            preTokenEndOffset += (curTermLength+1);
+
         }
     }
 
