@@ -130,15 +130,15 @@ public class WhiteSpaceNGramTokenFilter extends TokenFilter {
                 offsetAtt.setOffset(0, curTermLength);
 
                 curTermBuffer = null;
+                //reset();
                 return true;
             }
 
             // Done with this input token, get next token on next iteration.
             curTermBuffer = null;
 
-            // TODO : totalPosIncr(=)+1... stop filter처럼 토큰 처리되었을 경우...?
             // add
-            preTokenEndOffset += (curTermLength+1);
+            preTokenEndOffset += (curTermLength+posIncrAtt.getPositionIncrement());
 
         }
     }

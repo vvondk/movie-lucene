@@ -13,7 +13,14 @@ public class NGramAnalyzer extends Analyzer {
 //        Tokenizer tokenizer = new WhiteSpaceNGramTokenizer(2, 3);
 
         Tokenizer tokenizer = new WhitespaceTokenizer();
-        TokenStream tokenStream = new WhiteSpaceNGramTokenFilter(tokenizer, 2, 3,  false);
+
+        /*
+            TODO : preserveOriginal=true 인 경우 lastStartOffset이 startOffset보다 커서 실행 안됨
+            Exception in thread "main" java.lang.IllegalArgumentException: startOffset must be non-negative,
+            and endOffset must be >= startOffset, and offsets must not go backwards startOffset=0,endOffset=5,lastStartOffset=3 for field 'name'
+         */
+
+        TokenStream tokenStream = new WhiteSpaceNGramTokenFilter(tokenizer, 2, 3,   false);
 
         return new TokenStreamComponents(tokenizer, tokenStream);
     }
